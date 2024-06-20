@@ -11,7 +11,7 @@ const cardTemplate = fs.readFileSync(`${__dirname}/templates/card.html`, 'utf-8'
 const overviewTemplate = fs.readFileSync(`${__dirname}/templates/overview.html`, 'utf-8');
 const productTemplate = fs.readFileSync(`${__dirname}/templates/product.html`, 'utf-8');
 
-// Function to fill in the card template
+// Function to fill in the HTML templates
 const replaceTemplate = (template, product) => {
     let output = template.replace(/{%PRODUCT_NAME%}/g, product.productName)
                     .replace(/{%IMAGE%}/g, product.image)
@@ -52,8 +52,17 @@ function renderTestPage(res) {
     res.end(data);
 }
 
+function renderErrorPage(res) {
+    // Default error message
+    res.writeHead(404, {
+        'Content-type': 'text/html',
+        'my-own-header': 'hello-world'
+    });
+    res.end('<h1> Page not found! </h1>');
+}
+
 const server = http.createServer((req, res) => {
-    const protocol = req.connection.encrypted ? 'https' : 'http';
+    const protocol = req.encrypted ? 'https' : 'http';
     const baseURL = `${protocol}://${req.headers.host}/`;
     const url = new URL(req.url, baseURL);
 
@@ -67,12 +76,7 @@ const server = http.createServer((req, res) => {
     }else if (pathname === '/test') {
         renderTestPage(res);
     } else {
-        // Default error message
-        res.writeHead(404, {
-            'Content-type': 'text/html',
-            'my-own-header': 'hello-world'
-        });
-        res.end('<h1> Page not found! </h1>');
+        renderErrorPage(res);
     }
 });
 
