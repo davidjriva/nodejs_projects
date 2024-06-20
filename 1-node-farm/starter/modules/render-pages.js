@@ -24,18 +24,13 @@ function renderHomePage(res) {
   const cardsHTML = dataObj.map((item) => replaceTemplate(cardTemplate, item));
 
   // Replace all cards placeholder with the HTML to render the cards
-  const overviewHTML = overviewTemplate.replace(
-    /{%PRODUCT_CARDS%}/g,
-    cardsHTML
-  );
+  const overviewHTML = overviewTemplate.replace(/{%PRODUCT_CARDS%}/g, cardsHTML);
   res.end(overviewHTML);
 }
 
 function renderProductPage(res, id) {
   const productName = id.replaceAll('-', ' '); // Translate slug into original name of the product
-  const productObj = dataObj.find(
-    (item) => item.productName.toLowerCase() === productName
-  );
+  const productObj = dataObj.find((item) => item.productName.toLowerCase() === productName);
 
   if (productObj) {
     renderValidProduct(res, productObj);
@@ -79,15 +74,9 @@ const replaceTemplate = (template, product) => {
     .replace(/{%DESCRIPTION%}/g, product.description)
     .replace(/{%ID%}/g, slug_map[product.id]); // Use slug_map for cleaner rendering of product id's as the product name
 
-  if (!product.organic)
-    output = output.replace(/{%NOT_ORGANIC%}/g, 'not-organic');
+  if (!product.organic) output = output.replace(/{%NOT_ORGANIC%}/g, 'not-organic');
 
   return output;
 };
 
-module.exports = {
-  renderHomePage,
-  renderProductPage,
-  renderTestPage,
-  renderErrorPage,
-};
+module.exports = { renderHomePage, renderProductPage, renderTestPage, renderErrorPage };

@@ -1,11 +1,6 @@
 const http = require('http');
 require('url');
-const {
-  renderHomePage,
-  renderProductPage,
-  renderTestPage,
-  renderErrorPage,
-} = require('../modules/render-pages');
+const { renderHomePage, renderProductPage, renderTestPage, renderErrorPage } = require('../modules/render-pages');
 
 const server = http.createServer((req, res) => {
   const protocol = req.encrypted ? 'https' : 'http';
