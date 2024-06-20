@@ -40,6 +40,15 @@ function renderHomePage(res) {
 function renderProductPage(res, id) {
     const product = dataObj.find(item => item.id == id);
 
+    if (product){
+        renderValidProduct(res, product);
+    } else {
+        // No product was found with the given ID
+        renderErrorPage(res);
+    }
+}
+
+function renderValidProduct(res, product) {
     const productHTML = replaceTemplate(productTemplate, product);
 
     res.writeHead(200, {'Content-type': 'text/html'});
