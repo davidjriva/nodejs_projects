@@ -1,4 +1,19 @@
 {
+  "name": "node-farm",
+  "version": "1.0.0",
+  "description": "Developing a RESTful API for a grocery shopping platform",
+  "main": "simple-http-server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server": "node ./server/simple-http-server"
+  },
+  "keywords": [
+    "Node.js",
+    "CSS",
+    "HTML"
+  ],
+  "author": "David James Riva",
+  "license": "ISC",
   "dependencies": {
     "express": "^4.19.2"
   }
