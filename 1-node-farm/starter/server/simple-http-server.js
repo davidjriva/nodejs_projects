@@ -1,31 +1,16 @@
 const fs = require('fs');
 const http = require('http');
-const url = require('url');
+require('url');
+const { replaceTemplate } = require('../modules/replace-template');
 
 // Read data file synchronously (blocking call)
-const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8');
+const data = fs.readFileSync('../dev-data/data.json', 'utf-8');
 const dataObj = JSON.parse(data);
 
 // Read HTML files
-const cardTemplate = fs.readFileSync(`${__dirname}/templates/card.html`, 'utf-8');
-const overviewTemplate = fs.readFileSync(`${__dirname}/templates/overview.html`, 'utf-8');
-const productTemplate = fs.readFileSync(`${__dirname}/templates/product.html`, 'utf-8');
-
-// Function to fill in the HTML templates
-const replaceTemplate = (template, product) => {
-    let output = template.replace(/{%PRODUCT_NAME%}/g, product.productName)
-                    .replace(/{%IMAGE%}/g, product.image)
-                    .replace(/{%QUANTITY%}/g, product.quantity)
-                    .replace(/{%PRICE%}/g, `$${product.price}`)
-                    .replace(/{%FROM%}/g, product.from)
-                    .replace(/{%NUTRIENTS%}/g, product.nutrients)
-                    .replace(/{%DESCRIPTION%}/g, product.description)
-                    .replace(/{%ID%}/g, product.id);
-
-    if (!product.organic) output = output.replace(/{%NOT_ORGANIC%}/g, 'not-organic');
-
-    return output;
-}
+const cardTemplate = fs.readFileSync('../templates/card.html', 'utf-8');
+const overviewTemplate = fs.readFileSync('../templates/overview.html', 'utf-8');
+const productTemplate = fs.readFileSync('../templates/product.html', 'utf-8');
 
 function renderHomePage(res) {
     // Message contains HTML
