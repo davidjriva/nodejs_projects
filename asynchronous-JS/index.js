@@ -92,7 +92,7 @@ const getDogPic = async () => {
     // Wait for all three dog pic promises to resolve, then extract the image links
     const allDogPicPromises = await Promise.all([res1, res2, res3]);
     const images = allDogPicPromises.map((res) => res.body.message);
-    
+
     // Write all three dog pics simultaneously
     await writeFilePromise('dog-img.txt', images.join('\n'));
 
@@ -104,6 +104,8 @@ const getDogPic = async () => {
 
   return '2: Async function has completed';
 };
+
+// Test commit
 
 (async () => {
   try {
