@@ -105,8 +105,6 @@ const getDogPic = async () => {
   return '2: Async function has completed';
 };
 
-// test 2
-
 (async () => {
   try {
     console.log('1: Getting dog pics...');
