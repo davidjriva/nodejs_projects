@@ -59,8 +59,13 @@ const app = express();
 app.use(express.json());
 
 // API development endpoints
-app.route('/api/v1/tours').get(getTours).post(createTour);
-app.route('/api/v1/tours/:id').get(getTour).patch(updateTour).delete(deleteTour);
+app.route('/api/v1/tours')
+    .get(getTours)
+    .post(createTour);
+app.route('/api/v1/tours/:id')
+    .get(getTour)
+    .patch(updateTour)
+    .delete(deleteTour);
 
 // Starting a server:
 const port = 3000;
