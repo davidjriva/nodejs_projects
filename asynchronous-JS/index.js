@@ -59,7 +59,20 @@ const getDogPic = async () => {
     console.log('Dog pic saved successfully!');
   } catch (err) {
     console.log(err);
+    throw err; // Pass err up the chain
   }
+
+  return '2: Async function has completed';
 };
 
-getDogPic();
+// A special design pattern containing an unnamed function that's immediately called.
+(async () => {
+  try {
+    console.log('1: Getting dog pics...');
+    const msg = await getDogPic();
+    console.log(msg);
+    console.log('3: Done getting dog pics :D');
+  } catch (err) {
+    console.log(err);
+  }
+})();
