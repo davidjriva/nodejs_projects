@@ -1,5 +1,13 @@
 const Tour = require('./../models/tourModel');
 
+// Middleware: displays top 5 cheapest tours
+const aliasTopTours = (req, res, next) => {
+  req.query.limit = '5';
+  req.query.sort = '-ratingsAverage,price';
+  req.query.fields = 'name,price,ratingsAverage,summary,difficulty';
+  next();
+};
+
 // Get all documents in the tours collection from MongoDB
 const getTours = async (req, res) => {
   try {
@@ -18,16 +26,35 @@ const getTours = async (req, res) => {
 
     // 2. Sorting
     if (req.query.sort) {
-      const sortBy = req.query.sort.replace(',', ' ');
+      const sortBy = req.query.sort.replaceAll(',', ' ');
       query = query.sort(sortBy);
     } else {
       query = query.sort('-createdAt');
     }
 
-    // 3. Execute Query
+    // 3. Field Limiting
+    if (req.query.fields) {
+      const fields = req.query.fields.replaceAll(',', ' ');
+      query = query.select(fields);
+    } else {
+      query = query.select('-__v'); // excludes unnecessary fields from response
+    }
+
+    // 4. Pagination
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 100;
+    const skipVal = (page - 1) * limit;
+    query = query.skip(skipVal).limit(limit);
+
+    if (req.query.page) {
+      const numTours = await Tour.countDocuments();
+      if (skipVal >= numTours || skipVal < 0) throw new Error('This page does not exist');
+    }
+
+    // 5. Execute Query
     const tours = await query;
 
-    // 4. Send Response
+    // 6. Send Response
     res.status(200).json({
       status: 'success',
       results: tours.length,
@@ -105,4 +132,4 @@ const deleteTour = async (req, res) => {
   }
 };
 
-module.exports = { getTours, getTour, createTour, updateTour, deleteTour };
+module.exports = { aliasTopTours, getTours, getTour, createTour, updateTour, deleteTour };
