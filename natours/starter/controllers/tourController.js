@@ -3,8 +3,31 @@ const Tour = require('./../models/tourModel');
 // Get all documents in the tours collection from MongoDB
 const getTours = async (req, res) => {
   try {
-    const tours = await Tour.find();
+    // 1. Build Query
+    // Filtering)
+    const queryObj = { ...req.query };
+    const excludedFields = ['page', 'sort', 'limit', 'fields'];
 
+    excludedFields.forEach((field) => delete queryObj[field]);
+
+    // Advanced Filtering)
+    let queryStr = JSON.stringify(queryObj);
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`); // Turn operators to Mongo operators (gte --> $gte)
+
+    let query = Tour.find(JSON.parse(queryStr));
+
+    // 2. Sorting
+    if (req.query.sort) {
+      const sortBy = req.query.sort.replace(',', ' ');
+      query = query.sort(sortBy);
+    } else {
+      query = query.sort('-createdAt');
+    }
+
+    // 3. Execute Query
+    const tours = await query;
+
+    // 4. Send Response
     res.status(200).json({
       status: 'success',
       results: tours.length,
