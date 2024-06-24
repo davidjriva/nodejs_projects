@@ -1,0 +1,23 @@
+const express = require('express');
+const morgan = require('morgan');
+
+const tourRouter = require('./routes/tourRoutes');
+const userRouter = require('./routes/userRoutes');
+
+const app = express();
+
+// MIDDLEWARES
+// Functions capable of modifying incoming request data.
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev')); //Morgan: Logging Middleware
+}
+
+app.use(express.json()); // Adds the body into the request object as JSON.
+
+app.use(express.static(`${__dirname}/public`)); // Serve static files from the public directory (i.e. HTML, png, etc.)
+
+// ROUTES
+app.use('/api/v1/tours', tourRouter);
+app.use('/api/v1/users', userRouter);
+
+module.exports = app;
