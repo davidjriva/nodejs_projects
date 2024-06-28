@@ -1,4 +1,4 @@
-const Tour = require('./../models/tourModel');
+const Tour = require('../models/tourModel');
 const APIFeatures = require('../utils/apiFeatures');
 
 // Middleware: displays top 5 cheapest tours
