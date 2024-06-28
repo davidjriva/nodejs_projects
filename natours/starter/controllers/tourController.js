@@ -130,4 +130,54 @@ const getTourStats = async (req, res) => {
   }
 };
 
-module.exports = { aliasTopTours, getTours, getTour, createTour, updateTour, deleteTour, getTourStats };
+// Uses an aggregation pipeline to calculate the number of tours per month for a specific year
+// Returns the number of tours per month sorted in descending order
+const getMonthlyPlan = async (req, res) => {
+  try {
+    const year = parseInt(req.params.year);
+
+    const plan = await Tour.aggregate([
+      {
+        $unwind: '$startDates',
+      },
+      {
+        $match: {
+          startDates: {
+            $gte: new Date(`${year}-01-01`),
+            $lte: new Date(`${year}-12-31`),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: { $month: '$startDates' },
+          numTourStarts: { $sum: 1 },
+          tours: { $push: '$name' },
+        },
+      },
+      {
+        $addFields: {
+          month: '$_id',
+        },
+      },
+      {
+        $project: { _id: 0 },
+      },
+      {
+        $sort: { numTourStarts: -1 },
+      },
+    ]);
+
+    res.status(200).json({
+      status: 'success',
+      data: { plan },
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: 'failed',
+      message: err,
+    });
+  }
+};
+
+module.exports = { aliasTopTours, getTours, getTour, createTour, updateTour, deleteTour, getTourStats, getMonthlyPlan };
