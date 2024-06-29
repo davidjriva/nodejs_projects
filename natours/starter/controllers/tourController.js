@@ -1,5 +1,22 @@
+const { StatusCodes, getReasonPhrase } = require('http-status-codes');
 const Tour = require('../models/tourModel');
 const APIFeatures = require('../utils/apiFeatures');
+
+const formatResponse = (res, statusCode, status, data) => {
+  const response = {
+    status,
+  };
+
+  if (data) {
+    // Transmit data
+    response.data = data;
+  } else {
+    // Send error message
+    response.message = getReasonPhrase(statusCode);
+  }
+
+  res.status(statusCode).json(response);
+};
 
 // Middleware: displays top 5 cheapest tours
 const aliasTopTours = (req, res, next) => {
@@ -13,26 +30,15 @@ const aliasTopTours = (req, res, next) => {
 const getTours = async (req, res) => {
   try {
     // BUILD QUERY
-    const features = new APIFeatures(Tour.find(), req.query)
-      .filter()
-      .sort()
-      .limitFields()
-      .paginate();
+    const features = new APIFeatures(Tour.find(), req.query).filter().sort().limitFields().paginate();
 
     // EXECUTE QUERY
     const tours = await features.query;
 
     // SEND RESPONSE
-    res.status(200).json({
-      status: 'success',
-      results: tours.length,
-      data: { tours },
-    });
+    formatResponse(res, StatusCodes.OK, 'success', { tours, results: tours.length });
   } catch (err) {
-    res.status(400).json({
-      status: 'failed',
-      message: err,
-    });
+    formatResponse(res, StatusCodes.BAD_REQUEST, 'failed', null);
   }
 };
 
@@ -40,15 +46,9 @@ const getTour = async (req, res) => {
   try {
     const tour = await Tour.findById(req.params.id);
 
-    res.status(200).json({
-      status: 'success',
-      data: { tour },
-    });
+    formatResponse(res, StatusCodes.OK, 'success', tour);
   } catch (err) {
-    res.status(400).json({
-      status: 'failed',
-      message: err,
-    });
+    formatResponse(res, StatusCodes.BAD_REQUEST, 'failed', null);
   }
 };
 
@@ -57,17 +57,9 @@ const createTour = async (req, res) => {
   try {
     const newTour = await Tour.create(req.body);
 
-    res.status(201).json({
-      status: 'success',
-      data: {
-        tour: newTour,
-      },
-    });
+    formatResponse(res, StatusCodes.CREATED, 'success', newTour);
   } catch (err) {
-    res.status(400).json({
-      status: 'failed',
-      message: err,
-    });
+    formatResponse(res, StatusCodes.BAD_REQUEST, 'failed', null);
   }
 };
 
@@ -75,15 +67,9 @@ const updateTour = async (req, res) => {
   try {
     const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
 
-    res.status(200).json({
-      status: 'success',
-      data: { tour },
-    });
+    formatResponse(res, StatusCodes.OK, 'success', tour);
   } catch (err) {
-    res.status(404).json({
-      status: 'failed',
-      message: err,
-    });
+    formatResponse(res, StatusCodes.NOT_FOUND, 'failed', null);
   }
 };
 
@@ -91,12 +77,9 @@ const deleteTour = async (req, res) => {
   try {
     await Tour.findByIdAndDelete(req.params.id);
 
-    res.status(500).json({ status: 'success', data: null });
+    formatResponse(res, StatusCodes.OK, 'success', null);
   } catch (err) {
-    res.status(404).json({
-      status: 'failed',
-      message: err,
-    });
+    formatResponse(res, StatusCodes.NOT_FOUND, 'failed', null);
   }
 };
 
@@ -122,15 +105,9 @@ const getTourStats = async (req, res) => {
       },
     ]);
 
-    res.status(200).json({
-      status: 'success',
-      data: { stats },
-    });
+    formatResponse(res, StatusCodes.OK, 'success', stats);
   } catch (err) {
-    res.status(404).json({
-      status: 'failed',
-      message: err,
-    });
+    formatResponse(res, StatusCodes.NOT_FOUND, 'failed', null);
   }
 };
 
@@ -172,15 +149,9 @@ const getMonthlyPlan = async (req, res) => {
       },
     ]);
 
-    res.status(200).json({
-      status: 'success',
-      data: { plan },
-    });
+    formatResponse(res, StatusCodes.OK, 'success', plan);
   } catch (err) {
-    res.status(404).json({
-      status: 'failed',
-      message: err,
-    });
+    formatResponse(res, StatusCodes.NOT_FOUND, 'failed', null);
   }
 };
 
