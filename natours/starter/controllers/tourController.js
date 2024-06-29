@@ -5,15 +5,10 @@ const APIFeatures = require('../utils/apiFeatures');
 const formatResponse = (res, statusCode, status, data) => {
   const response = {
     status,
+    message: getReasonPhrase(statusCode),
   };
 
-  if (data) {
-    // Transmit data
-    response.data = data;
-  } else {
-    // Send error message
-    response.message = getReasonPhrase(statusCode);
-  }
+  if (data) response.data = data;
 
   res.status(statusCode).json(response);
 };
