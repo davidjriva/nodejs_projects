@@ -1,17 +1,8 @@
-const { StatusCodes, getReasonPhrase } = require('http-status-codes');
+const { StatusCodes } = require('http-status-codes');
+const { formatResponse } = require('../utils/formatResponse');
 const Tour = require('../models/tourModel');
 const APIFeatures = require('../utils/apiFeatures');
-
-const formatResponse = (res, statusCode, status, data) => {
-  const response = {
-    status,
-    message: getReasonPhrase(statusCode),
-  };
-
-  if (data) response.data = data;
-
-  res.status(statusCode).json(response);
-};
+const catchAsync = require('../utils/catchAsync');
 
 // Middleware: displays top 5 cheapest tours
 const aliasTopTours = (req, res, next) => {
@@ -22,132 +13,104 @@ const aliasTopTours = (req, res, next) => {
 };
 
 // Get all documents in the tours collection from MongoDB
-const getTours = async (req, res) => {
-  try {
-    // BUILD QUERY
-    const features = new APIFeatures(Tour.find(), req.query).filter().sort().limitFields().paginate();
+const getTours = catchAsync(async (req, res) => {
+  // BUILD QUERY
+  const features = new APIFeatures(Tour.find(), req.query).filter().sort().limitFields().paginate();
 
-    // EXECUTE QUERY
-    const tours = await features.query;
+  // EXECUTE QUERY
+  const tours = await features.query;
 
-    // SEND RESPONSE
-    formatResponse(res, StatusCodes.OK, 'success', { tours, results: tours.length });
-  } catch (err) {
-    formatResponse(res, StatusCodes.BAD_REQUEST, 'failed', null);
-  }
-};
+  // SEND RESPONSE
+  formatResponse(res, StatusCodes.OK, { tours, results: tours.length });
+});
 
-const getTour = async (req, res) => {
-  try {
-    const tour = await Tour.findById(req.params.id);
+const getTour = catchAsync(async (req, res) => {
+  const tour = await Tour.findById(req.params.id);
 
-    formatResponse(res, StatusCodes.OK, 'success', tour);
-  } catch (err) {
-    formatResponse(res, StatusCodes.BAD_REQUEST, 'failed', null);
-  }
-};
+  formatResponse(res, StatusCodes.OK, tour);
+});
 
 // Create new MongoDB document with tour information & insert into MongoDB
-const createTour = async (req, res) => {
-  try {
-    const newTour = await Tour.create(req.body);
+const createTour = catchAsync(async (req, res, next) => {
+  const newTour = await Tour.create(req.body);
 
-    formatResponse(res, StatusCodes.CREATED, 'success', newTour);
-  } catch (err) {
-    formatResponse(res, StatusCodes.BAD_REQUEST, 'failed', null);
-  }
-};
+  formatResponse(res, StatusCodes.CREATED, newTour);
+});
 
-const updateTour = async (req, res) => {
-  try {
-    const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+const updateTour = catchAsync(async (req, res) => {
+  const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
 
-    formatResponse(res, StatusCodes.OK, 'success', tour);
-  } catch (err) {
-    formatResponse(res, StatusCodes.NOT_FOUND, 'failed', null);
-  }
-};
+  formatResponse(res, StatusCodes.OK, tour);
+});
 
-const deleteTour = async (req, res) => {
-  try {
-    await Tour.findByIdAndDelete(req.params.id);
+const deleteTour = catchAsync(async (req, res) => {
+  await Tour.findByIdAndDelete(req.params.id);
 
-    formatResponse(res, StatusCodes.OK, 'success', null);
-  } catch (err) {
-    formatResponse(res, StatusCodes.NOT_FOUND, 'failed', null);
-  }
-};
+  formatResponse(res, StatusCodes.OK, null);
+});
 
-const getTourStats = async (req, res) => {
-  try {
-    const stats = await Tour.aggregate([
-      {
-        $match: { ratingsAverage: { $gte: 4.5 } },
+const getTourStats = catchAsync(async (req, res) => {
+  const stats = await Tour.aggregate([
+    {
+      $match: { ratingsAverage: { $gte: 4.5 } },
+    },
+    {
+      $group: {
+        _id: { $toUpper: '$difficulty' },
+        numTours: { $sum: 1 },
+        numRatings: { $sum: '$ratingsQuantity' },
+        avgRating: { $avg: '$ratingsAverage' },
+        avgPrice: { $avg: '$price' },
+        minPrice: { $min: '$price' },
+        maxPrice: { $max: '$price' },
       },
-      {
-        $group: {
-          _id: { $toUpper: '$difficulty' },
-          numTours: { $sum: 1 },
-          numRatings: { $sum: '$ratingsQuantity' },
-          avgRating: { $avg: '$ratingsAverage' },
-          avgPrice: { $avg: '$price' },
-          minPrice: { $min: '$price' },
-          maxPrice: { $max: '$price' },
-        },
-      },
-      {
-        $sort: { avgPrice: 1 },
-      },
-    ]);
+    },
+    {
+      $sort: { avgPrice: 1 },
+    },
+  ]);
 
-    formatResponse(res, StatusCodes.OK, 'success', stats);
-  } catch (err) {
-    formatResponse(res, StatusCodes.NOT_FOUND, 'failed', null);
-  }
-};
+  formatResponse(res, StatusCodes.OK, stats);
+});
 
 // Uses an aggregation pipeline to calculate the number of tours per month for a specific year
 // Returns the number of tours per month sorted in descending order
-const getMonthlyPlan = async (req, res) => {
-  try {
-    const year = parseInt(req.params.year);
+const getMonthlyPlan = catchAsync(async (req, res) => {
+  const year = parseInt(req.params.year);
 
-    const plan = await Tour.aggregate([
-      {
-        $unwind: '$startDates',
-      },
-      {
-        $match: {
-          startDates: {
-            $gte: new Date(`${year}-01-01`),
-            $lte: new Date(`${year}-12-31`),
-          },
+  const plan = await Tour.aggregate([
+    {
+      $unwind: '$startDates',
+    },
+    {
+      $match: {
+        startDates: {
+          $gte: new Date(`${year}-01-01`),
+          $lte: new Date(`${year}-12-31`),
         },
       },
-      {
-        $group: {
-          _id: { $month: '$startDates' },
-          numTourStarts: { $sum: 1 },
-          tours: { $push: '$name' },
-        },
+    },
+    {
+      $group: {
+        _id: { $month: '$startDates' },
+        numTourStarts: { $sum: 1 },
+        tours: { $push: '$name' },
       },
-      {
-        $addFields: {
-          month: '$_id',
-        },
+    },
+    {
+      $addFields: {
+        month: '$_id',
       },
-      {
-        $project: { _id: 0 },
-      },
-      {
-        $sort: { numTourStarts: -1 },
-      },
-    ]);
+    },
+    {
+      $project: { _id: 0 },
+    },
+    {
+      $sort: { numTourStarts: -1 },
+    },
+  ]);
 
-    formatResponse(res, StatusCodes.OK, 'success', plan);
-  } catch (err) {
-    formatResponse(res, StatusCodes.NOT_FOUND, 'failed', null);
-  }
-};
+  formatResponse(res, StatusCodes.OK, plan);
+});
 
 module.exports = { aliasTopTours, getTours, getTour, createTour, updateTour, deleteTour, getTourStats, getMonthlyPlan };
