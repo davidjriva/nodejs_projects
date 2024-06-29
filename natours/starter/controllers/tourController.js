@@ -1,5 +1,6 @@
 const { StatusCodes } = require('http-status-codes');
 const { formatResponse } = require('../utils/formatResponse');
+const AppError = require('../utils/appError');
 const Tour = require('../models/tourModel');
 const APIFeatures = require('../utils/apiFeatures');
 const catchAsync = require('../utils/catchAsync');
@@ -24,8 +25,10 @@ const getTours = catchAsync(async (req, res) => {
   formatResponse(res, StatusCodes.OK, { tours, results: tours.length });
 });
 
-const getTour = catchAsync(async (req, res) => {
+const getTour = catchAsync(async (req, res, next) => {
   const tour = await Tour.findById(req.params.id);
+
+  if (!tour) return next(new AppError(`No tour find with the ID ${req.params.id}`, StatusCodes.NOT_FOUND));
 
   formatResponse(res, StatusCodes.OK, tour);
 });
@@ -37,14 +40,18 @@ const createTour = catchAsync(async (req, res, next) => {
   formatResponse(res, StatusCodes.CREATED, newTour);
 });
 
-const updateTour = catchAsync(async (req, res) => {
+const updateTour = catchAsync(async (req, res, next) => {
   const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+
+  if (!tour) return next(new AppError(`No tour find with the ID ${req.params.id}`, StatusCodes.NOT_FOUND));
 
   formatResponse(res, StatusCodes.OK, tour);
 });
 
 const deleteTour = catchAsync(async (req, res) => {
-  await Tour.findByIdAndDelete(req.params.id);
+  const tour = await Tour.findByIdAndDelete(req.params.id);
+
+  if (!tour) return next(new AppError(`No tour find with the ID ${req.params.id}`, StatusCodes.NOT_FOUND));
 
   formatResponse(res, StatusCodes.OK, null);
 });
