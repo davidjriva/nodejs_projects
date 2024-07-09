@@ -1,3 +1,7 @@
+const { StatusCodes } = require('http-status-codes');
+const AppError = require('./utils/appError');
+const globalErrorHandler = require('./controllers/errorController');
+
 const express = require('express');
 const morgan = require('morgan');
 
@@ -19,5 +23,12 @@ app.use(express.static(`${__dirname}/public`)); // Serve static files from the p
 // ROUTES
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
+
+// Handling missing routes
+app.all('*', (req, res, next) => {
+  next(new AppError(`Can't find ${req.originalUrl} on this server!`, StatusCodes.NOT_FOUND));
+});
+
+app.use(globalErrorHandler);
 
 module.exports = app;
