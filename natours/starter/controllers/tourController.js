@@ -1,6 +1,6 @@
 const { StatusCodes } = require('http-status-codes');
 
-const { formatResponse } = require('../utils/formatResponse');
+const formatResponse = require('../utils/formatResponse');
 const AppError = require('../utils/appError');
 const Tour = require('../models/tourModel');
 const APIFeatures = require('../utils/apiFeatures');

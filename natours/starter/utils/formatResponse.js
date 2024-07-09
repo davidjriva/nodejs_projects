@@ -1,6 +1,6 @@
 const { getReasonPhrase } = require('http-status-codes');
 
-exports.formatResponse = (res, statusCode, data) => {
+module.exports = (res, statusCode, data) => {
   const response = {
     message: getReasonPhrase(statusCode),
   };

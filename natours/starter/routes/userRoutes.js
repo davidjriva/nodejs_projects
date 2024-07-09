@@ -7,9 +7,10 @@ const router = express.Router();
 const userController = require(`${__dirname}/../controllers/userController`);
 
 router.post('/signup', authController.signup);
+router.post('/login', authController.login);
 
 router.route('/')
-    .get(userController.getAllUsers)
+    .get(userController.getUsers)
     .post(userController.createUser);
 
 router.route('/:id')
