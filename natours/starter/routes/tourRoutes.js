@@ -1,25 +1,25 @@
 const express = require('express');
 
-const { aliasTopTours, getTours, getTour, createTour, updateTour, deleteTour, getTourStats, getMonthlyPlan } = require(`${__dirname}/../controllers/tourController`);
+const tourController = require(`${__dirname}/../controllers/tourController`);
 
 const router = express.Router();
 
 // Parameter specific middleware; it only runs on requests with an id param and validates it
 router.route('/top-5-cheap')
-    .get(aliasTopTours, getTours);
+    .get(tourController.aliasTopTours, tourController.getTours);
 
 router.route('/tour-stats')
-    .get(getTourStats);
+    .get(tourController.getTourStats);
 
 router.route('/monthly-plan/:year')
-    .get(getMonthlyPlan);
+    .get(tourController.getMonthlyPlan);
 
 router.route('/')
-    .get(getTours)
-    .post(createTour);
+    .get(tourController.getTours)
+    .post(tourController.createTour);
 router.route('/:id')
-    .get(getTour)
-    .patch(updateTour)
-    .delete(deleteTour);
+    .get(tourController.getTour)
+    .patch(tourController.updateTour)
+    .delete(tourController.deleteTour);
 
 module.exports = router;
