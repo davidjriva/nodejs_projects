@@ -2,7 +2,7 @@ const fs = require('fs');
 const { StatusCodes } = require('http-status-codes');
 
 const catchAsync = require('../utils/catchAsync');
-const formatResponse = require('../utils/formatResponse');
+const sendResponse = require('../utils/sendResponse');
 const User = require('./../models/userModel');
 
 const dataFilePath = `${__dirname}/../dev-data/data`;
@@ -11,7 +11,7 @@ const users = JSON.parse(fs.readFileSync(`${dataFilePath}/users.json`));
 exports.getUsers = catchAsync(async (req, res) => {
   const users = await User.find();
 
-  formatResponse(res, StatusCodes.OK, { users, results: users.length });
+  sendResponse(res, StatusCodes.OK, { users, results: users.length });
 });
 
 exports.createUser = (req, res) => {

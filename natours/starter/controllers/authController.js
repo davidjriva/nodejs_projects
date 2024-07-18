@@ -2,7 +2,7 @@ const { StatusCodes } = require('http-status-codes');
 const jwt = require('jsonwebtoken');
 
 const catchAsync = require('../utils/catchAsync');
-const formatResponse = require('../utils/formatResponse');
+const sendResponse = require('../utils/sendResponse');
 const User = require('./../models/userModel');
 const AppError = require('./../utils/appError');
 
@@ -20,7 +20,7 @@ exports.signup = catchAsync(async (req, res, next) => {
 
   const token = signToken(newUser._id);
 
-  formatResponse(res, StatusCodes.CREATED, { newUser, token });
+  sendResponse(res, StatusCodes.CREATED, { newUser, token });
 });
 
 exports.login = catchAsync(async (req, res, next) => {
@@ -40,5 +40,5 @@ exports.login = catchAsync(async (req, res, next) => {
   }
 
   const token = signToken(user._id);
-  formatResponse(res, StatusCodes.OK, token);
+  sendResponse(res, StatusCodes.OK, token);
 });

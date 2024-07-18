@@ -1,6 +1,6 @@
 const { StatusCodes } = require('http-status-codes');
 
-const formatResponse = require('../utils/formatResponse');
+const sendResponse = require('../utils/sendResponse');
 const AppError = require('../utils/appError');
 const Tour = require('../models/tourModel');
 const APIFeatures = require('../utils/apiFeatures');
@@ -23,7 +23,7 @@ exports.getTours = catchAsync(async (req, res) => {
   const tours = await features.query;
 
   // SEND RESPONSE
-  formatResponse(res, StatusCodes.OK, { tours, results: tours.length });
+  sendResponse(res, StatusCodes.OK, { tours, results: tours.length });
 });
 
 exports.getTour = catchAsync(async (req, res, next) => {
@@ -31,14 +31,14 @@ exports.getTour = catchAsync(async (req, res, next) => {
 
   if (!tour) return next(new AppError(`No tour find with the ID ${req.params.id}`, StatusCodes.NOT_FOUND));
 
-  formatResponse(res, StatusCodes.OK, tour);
+  sendResponse(res, StatusCodes.OK, tour);
 });
 
 // Create new MongoDB document with tour information & insert into MongoDB
 exports.createTour = catchAsync(async (req, res, next) => {
   const newTour = await Tour.create(req.body);
 
-  formatResponse(res, StatusCodes.CREATED, newTour);
+  sendResponse(res, StatusCodes.CREATED, newTour);
 });
 
 exports.updateTour = catchAsync(async (req, res, next) => {
@@ -46,7 +46,7 @@ exports.updateTour = catchAsync(async (req, res, next) => {
 
   if (!tour) return next(new AppError(`No tour find with the ID ${req.params.id}`, StatusCodes.NOT_FOUND));
 
-  formatResponse(res, StatusCodes.OK, tour);
+  sendResponse(res, StatusCodes.OK, tour);
 });
 
 exports.deleteTour = catchAsync(async (req, res) => {
@@ -54,7 +54,7 @@ exports.deleteTour = catchAsync(async (req, res) => {
 
   if (!tour) return next(new AppError(`No tour find with the ID ${req.params.id}`, StatusCodes.NOT_FOUND));
 
-  formatResponse(res, StatusCodes.OK, null);
+  sendResponse(res, StatusCodes.OK, null);
 });
 
 exports.getTourStats = catchAsync(async (req, res) => {
@@ -78,7 +78,7 @@ exports.getTourStats = catchAsync(async (req, res) => {
     },
   ]);
 
-  formatResponse(res, StatusCodes.OK, stats);
+  sendResponse(res, StatusCodes.OK, stats);
 });
 
 // Uses an aggregation pipeline to calculate the number of tours per month for a specific year
@@ -118,5 +118,5 @@ exports.getMonthlyPlan = catchAsync(async (req, res) => {
     },
   ]);
 
-  formatResponse(res, StatusCodes.OK, plan);
+  sendResponse(res, StatusCodes.OK, plan);
 });
