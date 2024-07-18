@@ -27,7 +27,7 @@ exports.login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
   // 1.) Verify email & password exist
-  if (!email | !password) {
+  if (!email || !password) {
     next(new AppError('Please provide email and password', StatusCodes.BAD_REQUEST));
   }
 
