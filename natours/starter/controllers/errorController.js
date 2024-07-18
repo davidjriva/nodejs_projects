@@ -36,6 +36,14 @@ const handleValidationErrorDB = (err) => {
   return new AppError(message, StatusCodes.BAD_REQUEST);
 };
 
+const handleJsonWebTokenError = () => {
+  return new AppError('Invalid JWT token. Please log in again!', StatusCodes.UNAUTHORIZED);
+};
+
+const handleTokenExpiredError = () => {
+  return new AppError('JWT token has expired. Please log in again!', StatusCodes.UNAUTHORIZED);
+};
+
 module.exports = (err, req, res, next) => {
   err.statusCode = err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR;
   err.status = err.status || 'error';
@@ -50,6 +58,8 @@ module.exports = (err, req, res, next) => {
     if (error.name === 'CastError') error = handleCastErrorDB(error);
     if (error.code === 11000) error = handleDuplicateFieldsDB(error);
     if (error.name === 'ValidationError') error = handleValidationErrorDB(error);
+    if (error.name === 'JsonWebTokenError') error = handleJsonWebTokenError();
+    if (error.name === 'TokenExpiredError') error = handleTokenExpiredError();
 
     error.isOperational ? sendError(res, error) : sendSimpleError(res, error);
   }
