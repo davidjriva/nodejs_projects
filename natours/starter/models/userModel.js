@@ -58,6 +58,15 @@ userSchema.pre('save', async function (next) {
   this.passwordConfirm = undefined;
 });
 
+userSchema.pre('save', function (next) {
+  if (!this.isModified('password') || this.isNew) {
+    return next();
+  }
+
+  this.passwordChangedAt = Date.now() - 1000;
+  next();
+});
+
 // Instance method: A method available on all documents that allows us to validate passwords on login
 userSchema.methods.correctPassword = async function (candidatePassword, userPassword) {
   return await bcrypt.compare(candidatePassword, userPassword);
@@ -65,10 +74,10 @@ userSchema.methods.correctPassword = async function (candidatePassword, userPass
 
 // Check if user changed their password after the JWT was signed [prevent bad actors from stealing JWT and attacking compromised accounts]
 userSchema.methods.changedPasswordAfter = function (JWT_Timestamp) {
-  // Check if password has ever been changed and if it was changed after the JWT token was signed
   if (this.passwordChangedAt) {
-    const changedTimeStamp = parseInt(this.passwordChangedAt.getTime(), 10);
-    return JWT_Timestamp < changedTimeStamp;
+    const changedTimestamp = parseInt(this.passwordChangedAt.getTime() / 1000, 10);
+
+    return JWT_Timestamp < changedTimestamp;
   }
 
   return false;
@@ -77,8 +86,11 @@ userSchema.methods.changedPasswordAfter = function (JWT_Timestamp) {
 userSchema.methods.createPasswordResetToken = function () {
   const resetToken = crypto.randomBytes(32).toString('hex');
 
-  this.passwordResetToken = crypto.createHash('sha256').update(resetToken).digest();
-  this.passwordResetExpires = Date.now() + 10 * 60 * 1000; // Give the user 10 minutes to reset password
+  this.passwordResetToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+
+  console.log({ resetToken }, this.passwordResetToken);
+
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
 
   return resetToken;
 };

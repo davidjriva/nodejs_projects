@@ -10,7 +10,6 @@ const sendEmail = async (options) => {
       pass: process.env.EMAIL_PASSWORD,
     },
   });
-  console.log(transporter);
 
   // 2) Define the email options
   const mailOptions = {
