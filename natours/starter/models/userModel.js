@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
@@ -22,7 +23,7 @@ const userSchema = new mongoose.Schema({
   role: {
     type: String,
     enum: ['user', 'guide', 'lead-guide', 'admin'],
-    default: 'user'
+    default: 'user',
   },
   password: {
     type: String,
@@ -41,6 +42,8 @@ const userSchema = new mongoose.Schema({
     },
   },
   passwordChangedAt: Date,
+  passwordResetToken: String,
+  passwordResetExpires: Date,
 });
 
 // Password encryption middleware
@@ -69,6 +72,15 @@ userSchema.methods.changedPasswordAfter = function (JWT_Timestamp) {
   }
 
   return false;
+};
+
+userSchema.methods.createPasswordResetToken = function () {
+  const resetToken = crypto.randomBytes(32).toString('hex');
+
+  this.passwordResetToken = crypto.createHash('sha256').update(resetToken).digest();
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000; // Give the user 10 minutes to reset password
+
+  return resetToken;
 };
 
 const User = mongoose.model('User', userSchema);
