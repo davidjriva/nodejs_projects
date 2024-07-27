@@ -1,6 +1,7 @@
 const express = require('express');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
 
 const { StatusCodes } = require('http-status-codes');
 const AppError = require('./utils/appError');
@@ -12,12 +13,16 @@ const userRouter = require('./routes/userRoutes');
 const app = express();
 
 // GLOBAL MIDDLEWARES
-// Functions capable of modifying incoming request data.
+
+// Set security HTTP Headers
+app.use(helmet());
+
+// Logging middleware [dev only]
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev')); //Morgan: Logging Middleware
 }
 
-// Prevents the max number of requests per IP address
+// Limit Requests - Prevents the max number of requests per IP address
 // App crashes/shutdowns reset the rate limiter
 const limiter = rateLimit({
   max: 250,
@@ -26,9 +31,11 @@ const limiter = rateLimit({
 });
 app.use('/api', limiter);
 
-app.use(express.json()); // Adds the body into the request object as JSON.
+// Body parsers - reading data from the body into req.body
+app.use(express.json({ limit: '10kb' })); // Adds the body into the request object as JSON.
 
-app.use(express.static(`${__dirname}/public`)); // Serve static files from the public directory (i.e. HTML, png, etc.)
+// Serving static files
+app.use(express.static(`${__dirname}/public`));
 
 // ROUTES
 app.use('/api/v1/tours', tourRouter);
