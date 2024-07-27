@@ -14,7 +14,6 @@ const signToken = (id) => {
 };
 
 const createAndSendToken = (res, user, statusCode, data) => {
-  console.log(user);
   const token = signToken(user._id);
   sendResponse(res, statusCode, { token, ...data });
 };
