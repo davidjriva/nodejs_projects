@@ -1,20 +1,30 @@
+const express = require('express');
+const morgan = require('morgan');
+const rateLimit = require('express-rate-limit');
+
 const { StatusCodes } = require('http-status-codes');
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
-
-const express = require('express');
-const morgan = require('morgan');
 
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 
 const app = express();
 
-// MIDDLEWARES
+// GLOBAL MIDDLEWARES
 // Functions capable of modifying incoming request data.
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev')); //Morgan: Logging Middleware
 }
+
+// Prevents the max number of requests per IP address
+// App crashes/shutdowns reset the rate limiter
+const limiter = rateLimit({
+  max: 250,
+  windowMs: 60 * 60 * 1000,
+  message: 'Too many requests are coming from this IP, please try again in an hour!',
+});
+app.use('/api', limiter);
 
 app.use(express.json()); // Adds the body into the request object as JSON.
 
