@@ -26,7 +26,7 @@ mongoose
   });
 
 // Read JSON file
-const tours = JSON.parse(fs.readFileSync(`${__dirname}/tours-simple.json`, 'utf-8'));
+const tours = JSON.parse(fs.readFileSync(`${__dirname}/tours.json`, 'utf-8'));
 
 // Import data into DB
 const importData = async () => {
@@ -54,9 +54,9 @@ const deleteAllData = async () => {
 };
 
 if (process.argv[2] == '--import') {
-    importData();
-} else if (process.argv[2] == '--delete'){
-    deleteAllData();
+  importData();
+} else if (process.argv[2] == '--delete') {
+  deleteAllData();
 } else {
-    console.log('Improper arguments passed. Please pass --import or --delete as options.')
+  console.log('Improper arguments passed. Please pass --import or --delete as options.');
 }
