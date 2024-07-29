@@ -120,6 +120,14 @@ tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });
 
+// Virtual Populate: Connects together Review and Tour models to get all the reviews for a tour.
+// Only populate this field on a 'get/:id' request
+tourSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'tour',
+  localField: '_id',
+});
+
 // Document Middleware: runs before the .save() and .create() command on each document in the DB
 tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
