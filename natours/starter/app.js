@@ -12,6 +12,7 @@ const globalErrorHandler = require('./controllers/errorController');
 
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
+const reviewRouter = require('./routes/reviewRoutes');
 
 const app = express();
 
@@ -30,7 +31,7 @@ if (process.env.NODE_ENV === 'development') {
 const limiter = rateLimit({
   max: 250,
   windowMs: 60 * 60 * 1000,
-  message: 'Too many requests are coming from this IP, please try again in an hour!',
+  message: 'Too many requests are coming from this IP, please try again in an hour.',
 });
 app.use('/api', limiter);
 
@@ -56,6 +57,7 @@ app.use(express.static(`${__dirname}/public`));
 // ROUTES
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/reviews', reviewRouter);
 
 // Handling missing routes
 app.all('*', (req, res, next) => {

@@ -29,7 +29,9 @@ exports.getTours = catchAsync(async (req, res) => {
 exports.getTour = catchAsync(async (req, res, next) => {
   const tour = await Tour.findById(req.params.id);
 
-  if (!tour) return next(new AppError(`No tour find with the ID ${req.params.id}`, StatusCodes.NOT_FOUND));
+  if (!tour) {
+    return next(new AppError(`No tour find with the ID ${req.params.id}`, StatusCodes.NOT_FOUND));
+  }
 
   sendResponse(res, StatusCodes.OK, tour);
 });
