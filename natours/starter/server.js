@@ -1,8 +1,16 @@
 const mongoose = require('mongoose');
 
 process.on('uncaughtException', (err) => {
-  console.log('UNCAUGHT EXCEPTION. Shutting down...');
-  console.log(err.name, err.message);
+  console.error('UNCAUGHT EXCEPTION. Shutting down...');
+  console.error(`Name: ${err.name}`);
+
+  if (process.env.NODE_ENV == "development"){
+    console.error(`Message: ${err.message}`);
+    console.error(`Stack: ${err.stack}`);
+  }
+
+  console.error(`Timestamp: ${new Date().toISOString()}`);
+
   process.exit(1);
 });
 
