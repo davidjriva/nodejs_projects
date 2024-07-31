@@ -19,21 +19,10 @@ const filterObj = (obj, ...allowedFields) => {
   return newObj;
 };
 
-exports.getUsers = catchAsync(async (req, res) => {
-  const users = await User.find();
+// CRUD functionality for User resource
+exports.getUsers = factory.getAll(User);
 
-  sendResponse(res, StatusCodes.OK, { users, results: users.length });
-});
-
-exports.getUser = catchAsync(async (req, res, next) => {
-  const user = await User.findById(req.params.id);
-
-  if (!user) {
-    return next(new AppError('No user with that ID found', StatusCodes.NOT_FOUND));
-  }
-
-  sendResponse(res, StatusCodes.OK, user);
-});
+exports.getUser = factory.getOne(User);
 
 exports.updateUser = factory.updateOne(User);
 

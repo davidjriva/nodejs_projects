@@ -1,46 +1,29 @@
 const { StatusCodes } = require('http-status-codes');
 
 const sendResponse = require('../utils/sendResponse');
-const AppError = require('../utils/appError');
 const Tour = require('../models/tourModel');
-const APIFeatures = require('../utils/apiFeatures');
 const catchAsync = require('../utils/catchAsync');
 const factory = require('./handlerFactory');
 
-// Middleware: displays top 5 cheapest tours
+
+// CRUD functionality for Tour resource
+exports.getTours = factory.getAll(Tour);
+
+exports.getTour = factory.getOne(Tour, { path: 'reviews' });
+
+exports.createTour = factory.createOne(Tour);
+
+exports.updateTour = factory.updateOne(Tour);
+
+exports.deleteTour = factory.deleteOne(Tour);
+
+// Additional routes for data analysis features
 exports.aliasTopTours = (req, res, next) => {
   req.query.limit = '5';
   req.query.sort = '-ratingsAverage,price';
   req.query.fields = 'name,price,ratingsAverage,summary,difficulty';
   next();
 };
-
-// Get all documents in the tours collection from MongoDB
-exports.getTours = catchAsync(async (req, res) => {
-  // BUILD QUERY
-  const features = new APIFeatures(Tour.find(), req.query).filter().sort().limitFields().paginate();
-
-  // EXECUTE QUERY
-  const tours = await features.query;
-
-  // SEND RESPONSE
-  sendResponse(res, StatusCodes.OK, { tours, results: tours.length });
-});
-
-exports.getTour = catchAsync(async (req, res, next) => {
-  const tour = await Tour.findById(req.params.id).populate('reviews');
-
-  if (!tour) {
-    return next(new AppError(`No tour find with the ID ${req.params.id}`, StatusCodes.NOT_FOUND));
-  }
-
-  sendResponse(res, StatusCodes.OK, tour);
-});
-
-// Create new MongoDB document with tour information & insert into MongoDB
-exports.createTour = factory.createOne(Tour);
-exports.updateTour = factory.updateOne(Tour);
-exports.deleteTour = factory.deleteOne(Tour);
 
 exports.getTourStats = catchAsync(async (req, res) => {
   const stats = await Tour.aggregate([
