@@ -24,6 +24,12 @@ exports.getUsers = factory.getAll(User);
 
 exports.getUser = factory.getOne(User);
 
+exports.getMe = (req, res, next) => { 
+  // Gets the user document for the current logged in user
+  req.params.id = req.user.id;
+  next();
+} 
+
 exports.updateUser = factory.updateOne(User);
 
 exports.updateMe = catchAsync(async (req, res, next) => {
