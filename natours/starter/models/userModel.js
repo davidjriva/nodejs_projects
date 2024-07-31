@@ -39,6 +39,7 @@ const userSchema = new mongoose.Schema({
       },
       message: "The entered passwords don't match",
     },
+    required: [true, 'A user must confirm their password on signup'] // Comment out this line when importing dev-data as the users.json data doesn't conform properly
   },
   passwordChangedAt: Date,
   passwordResetToken: String,
