@@ -10,12 +10,19 @@ router.post('/login', authController.login);
 
 router.post('/forgotPassword', authController.forgotPassword);
 router.patch('/resetPassword/:token', authController.resetPassword);
-router.patch('/updatePassword', authController.protect, authController.updatePassword);
+
+// ! - All routes past this point require a user to be logged in - !
+router.use(authController.protect); 
+
+router.patch('/updatePassword', authController.updatePassword);
 
 // Custom routes to read, modify, or delete the current logged in user
-router.get('/me', authController.protect, userController.getMe, userController.getUser);
-router.patch('/updateMe', authController.protect, userController.updateMe);
-router.delete('/deleteMe', authController.protect, userController.deleteMe);
+router.get('/me', userController.getMe, userController.getUser);
+router.patch('/updateMe', userController.updateMe);
+router.delete('/deleteMe', userController.deleteMe);
+
+// !! - All routes past this point require admin privileges - !!
+router.use(authController.restrictTo('admin'));
 
 router.route('/')
     .get(userController.getUsers);
