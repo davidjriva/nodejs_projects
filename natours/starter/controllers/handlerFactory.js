@@ -54,6 +54,7 @@ exports.getAll = (Model) =>
 
     const features = new APIFeatures(Model.find(filter), req.query).filter().sort().limitFields().paginate();
 
+    // Measuring query performance -> add the .explain() modifier to the query and it will return performance details to the endpoint
     const docs = await features.query;
 
     sendResponse(res, StatusCodes.OK, { docs, results: docs.length });
