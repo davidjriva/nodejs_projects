@@ -148,21 +148,6 @@ tourSchema.pre(/^find/, function (next) {
   next();
 });
 
-// TODO: MAKE IT SO THAT ALL REVIEWS ARE DELETED FOR A TOUR WHEN A TOUR IS DELETED!
-
-// Query Middleware: runs before every query
-// tourSchema.pre(/^find/, function (next) {
-//   this.find({ secretTour: { $ne: true } });
-//   next();
-// });
-
-// Aggregation Middleware: runs everytime an aggregation pipeline is executed
-// tourSchema.pre('aggregate', function (next) {
-//   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
-
-//   next();
-// });
-
 const Tour = mongoose.model('Tour', tourSchema);
 
 module.exports = Tour;
