@@ -115,6 +115,10 @@ const tourSchema = new mongoose.Schema(
   }
 );
 
+// Indices set on our tour model:
+tourSchema.index({ price: 1 });
+tourSchema.index({ slug: 1 });
+
 // Virtual Property (not persisted in DB): Calculate the duration of the trip in weeks
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
@@ -143,6 +147,8 @@ tourSchema.pre(/^find/, function (next) {
 
   next();
 });
+
+// TODO: MAKE IT SO THAT ALL REVIEWS ARE DELETED FOR A TOUR WHEN A TOUR IS DELETED!
 
 // Query Middleware: runs before every query
 // tourSchema.pre(/^find/, function (next) {
