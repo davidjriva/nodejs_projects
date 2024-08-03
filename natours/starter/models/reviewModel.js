@@ -36,6 +36,9 @@ const reviewSchema = new mongoose.Schema(
   }
 );
 
+// Prevents the same user from leaving multiple reviews. Each user-tour combination must be unique.
+reviewSchema.index({ tour: 1, user: 1 }, { unique: true });
+
 // Populate the user and tour field on find queries
 reviewSchema.pre(/^find/, function (next) {
   this.populate({
