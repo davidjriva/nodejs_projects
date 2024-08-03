@@ -3,8 +3,8 @@ const { StatusCodes } = require('http-status-codes');
 const sendResponse = require('../utils/sendResponse');
 const Tour = require('../models/tourModel');
 const catchAsync = require('../utils/catchAsync');
+const AppError = require('../utils/appError');
 const factory = require('./handlerFactory');
-
 
 // CRUD functionality for Tour resource
 exports.getTours = factory.getAll(Tour);
@@ -16,6 +16,62 @@ exports.createTour = factory.createOne(Tour);
 exports.updateTour = factory.updateOne(Tour);
 
 exports.deleteTour = factory.deleteOne(Tour);
+
+// Geospatial query for tours within a certain distance to the user
+exports.getToursWithin = catchAsync(async (req, res, next) => {
+  const { distance, latlng, unit } = req.params;
+  const [lat, lng] = latlng.split(',');
+
+  const radians = unit === 'mi' ? distance / 3963.2 : distance / 6378.1;
+  console.log(`distance:${distance}\nlat:${lat} lng:${lng}\nunit: ${unit}\nradians: ${radians}`);
+
+  if (!lat || !lng) {
+    return next(new AppError('Please provide latitude and longitude in the format lat,lng', StatusCodes.BAD_REQUEST));
+  }
+
+  const tours = await Tour.find({
+    startLocation: {
+      $geoWithin: {
+        $centerSphere: [[lng, lat], radians],
+      },
+    },
+  });
+
+  sendResponse(res, StatusCodes.OK, { tours, results: tours.length });
+});
+
+// Calculates distances from a location to all other tours
+exports.getDistances = catchAsync(async (req, res, next) => {
+  const { latlng, unit } = req.params;
+  const [lat, lng] = latlng.split(',');
+
+  const distanceMultiplier = unit === 'mi' ? 0.000621371 : 0.001;
+
+  if (!lat || !lng) {
+    return next(new AppError('Please provide latitude and longitude in the format lat,lng', StatusCodes.BAD_REQUEST));
+  }
+
+  const distances = await Tour.aggregate([
+    {
+      $geoNear: {
+        near: {
+          type: 'Point',
+          coordinates: [lng * 1, lat * 1],
+        },
+        distanceField: 'distance',
+        distanceMultiplier,
+      },
+    },
+    {
+      $project: {
+        distance: 1,
+        name: 1,
+      },
+    },
+  ]);
+
+  sendResponse(res, StatusCodes.OK, { distances, results: distances.length });
+});
 
 // Additional routes for data analysis features
 exports.aliasTopTours = (req, res, next) => {
