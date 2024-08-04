@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
@@ -17,6 +18,13 @@ const reviewRouter = require('./routes/reviewRoutes');
 const app = express();
 
 // GLOBAL MIDDLEWARES
+
+// Template Engine Setup (Views):
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
+
+// Serving static files
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Set security HTTP Headers
 app.use(helmet());
@@ -51,10 +59,11 @@ app.use(
   })
 );
 
-// Serving static files
-app.use(express.static(`${__dirname}/public`));
-
 // ROUTES
+app.get('/', (req, res) => {
+  res.status(StatusCodes.OK).render('base');
+});
+
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
