@@ -2,12 +2,13 @@ const { promisify } = require('util');
 const { StatusCodes } = require('http-status-codes');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
+const path = require('path');
 
-const catchAsync = require('../utils/catchAsync');
-const sendResponse = require('../utils/sendResponse');
-const User = require('./../models/userModel');
-const AppError = require('./../utils/appError');
-const sendEmail = require('./../utils/email');
+const catchAsync = require(path.join(__dirname, '../utils/catchAsync'));
+const sendResponse = require(path.join(__dirname, '../utils/sendResponse'));
+const User = require(path.join(__dirname, './../models/userModel'));
+const AppError = require(path.join(__dirname, './../utils/appError'));
+const sendEmail = require(path.join(__dirname, './../utils/email'));
 
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });

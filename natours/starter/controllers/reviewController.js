@@ -1,10 +1,7 @@
-const { StatusCodes } = require('http-status-codes');
+const path = require('path');
 
-const catchAsync = require('../utils/catchAsync');
-const Review = require('../models/reviewModel');
-const sendResponse = require('../utils/sendResponse');
-const AppError = require('../utils/appError');
-const factory = require('./handlerFactory');
+const Review = require(path.join(__dirname, '../models/reviewModel'));
+const factory = require(path.join(__dirname, './handlerFactory'));
 
 // CRUD functionality for Review resource
 exports.getReviews = factory.getAll(Review);

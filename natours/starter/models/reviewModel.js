@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
-const Tour = require('./tourModel');
+const path = require('path');
+
+const Tour = require(path.join(__dirname, 'tourModel'));
 
 const reviewSchema = new mongoose.Schema(
   {

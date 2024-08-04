@@ -8,9 +8,11 @@
 const fs = require('fs');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
-const Tour = require('./../../models/tourModel');
-const Review = require('./../../models/reviewModel');
-const User = require('./../../models/userModel');
+const path = require('path');
+
+const Tour = require(path.join(__dirname, '.', '..', '..', 'models', 'tourModel'));
+const Review = require(path.join(__dirname, '.', '..', '..', 'models', 'reviewModel'));
+const User = require(path.join(__dirname, '.', '..', '..', 'models', 'userModel'));
 
 dotenv.config({ path: './config.env' });
 

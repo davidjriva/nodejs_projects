@@ -1,9 +1,10 @@
 const { StatusCodes } = require('http-status-codes');
+const path = require('path');
 
-const catchAsync = require('../utils/catchAsync');
-const AppError = require('../utils/appError');
-const sendResponse = require('../utils/sendResponse');
-const APIFeatures = require('../utils/apiFeatures');
+const catchAsync = require(path.join(__dirname, '../utils/catchAsync'));
+const AppError = require(path.join(__dirname, '../utils/appError'));
+const sendResponse = require(path.join(__dirname, '../utils/sendResponse'));
+const APIFeatures = require(path.join(__dirname, '../utils/apiFeatures'));
 
 // Generic factory methods for frequently used CRUD operations across the API
 exports.deleteOne = (Model) =>

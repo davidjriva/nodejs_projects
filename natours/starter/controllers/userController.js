@@ -1,11 +1,11 @@
-const fs = require('fs');
 const { StatusCodes } = require('http-status-codes');
+const path = require('path');
 
-const catchAsync = require('../utils/catchAsync');
-const sendResponse = require('../utils/sendResponse');
-const AppError = require('./../utils/appError');
-const User = require('./../models/userModel');
-const factory = require('./handlerFactory');
+const catchAsync = require(path.join(__dirname, '..', 'utils', 'catchAsync'));
+const sendResponse = require(path.join(__dirname, '..', 'utils', 'sendResponse'));
+const AppError = require(path.join(__dirname, '.', '..', 'utils', 'appError'));
+const User = require(path.join(__dirname, '.', '..', 'models', 'userModel'));
+const factory = require(path.join(__dirname, 'handlerFactory'));
 
 // Only keep the fields passed in as allowed fields [prevents modifying certain fields]
 const filterObj = (obj, ...allowedFields) => {
@@ -24,11 +24,11 @@ exports.getUsers = factory.getAll(User);
 
 exports.getUser = factory.getOne(User);
 
-exports.getMe = (req, res, next) => { 
+exports.getMe = (req, res, next) => {
   // Gets the user document for the current logged in user
   req.params.id = req.user.id;
   next();
-} 
+};
 
 exports.updateUser = factory.updateOne(User);
 

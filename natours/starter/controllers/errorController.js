@@ -1,5 +1,7 @@
 const { StatusCodes } = require('http-status-codes');
-const AppError = require('../utils/appError');
+const path = require('path');
+
+const AppError = require(path.join(__dirname, '../utils/appError'));
 
 const sendError = (res, err, additionalInfo) => {
   res.status(err.statusCode).json({

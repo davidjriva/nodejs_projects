@@ -1,10 +1,11 @@
 const { StatusCodes } = require('http-status-codes');
+const path = require('path');
 
-const sendResponse = require('../utils/sendResponse');
-const Tour = require('../models/tourModel');
-const catchAsync = require('../utils/catchAsync');
-const AppError = require('../utils/appError');
-const factory = require('./handlerFactory');
+const sendResponse = require(path.join(__dirname, '../utils/sendResponse'));
+const catchAsync = require(path.join(__dirname, '../utils/catchAsync'));
+const AppError = require(path.join(__dirname, '../utils/appError'));
+const Tour = require(path.join(__dirname, '../models/tourModel'));
+const factory = require(path.join(__dirname, './handlerFactory'));
 
 // CRUD functionality for Tour resource
 exports.getTours = factory.getAll(Tour);
