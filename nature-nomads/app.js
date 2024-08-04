@@ -6,7 +6,6 @@ const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
-const { StatusCodes } = require('http-status-codes');
 
 const AppError = require(path.join(__dirname, 'utils', 'appError'));
 const globalErrorHandler = require(path.join(__dirname, 'controllers', 'errorController'));
@@ -14,6 +13,7 @@ const globalErrorHandler = require(path.join(__dirname, 'controllers', 'errorCon
 const tourRouter = require(path.join(__dirname, 'routes', 'tourRoutes'));
 const userRouter = require(path.join(__dirname, 'routes', 'userRoutes'));
 const reviewRouter = require(path.join(__dirname, 'routes', 'reviewRoutes'));
+const viewRouter = require(path.join(__dirname, 'routes', 'viewRoutes'));
 
 const app = express();
 
@@ -60,13 +60,7 @@ app.use(
 );
 
 // ROUTES
-app.get('/', (req, res) => {
-  res.status(StatusCodes.OK).render('base', {
-    tour: 'The Forest Hiker',
-    user: 'David',
-  });
-});
-
+app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
