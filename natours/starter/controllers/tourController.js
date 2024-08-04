@@ -24,7 +24,6 @@ exports.getToursWithin = catchAsync(async (req, res, next) => {
   const [lat, lng] = latlng.split(',');
 
   const radians = unit === 'mi' ? distance / 3963.2 : distance / 6378.1;
-  console.log(`distance:${distance}\nlat:${lat} lng:${lng}\nunit: ${unit}\nradians: ${radians}`);
 
   if (!lat || !lng) {
     return next(new AppError('Please provide latitude and longitude in the format lat,lng', StatusCodes.BAD_REQUEST));
