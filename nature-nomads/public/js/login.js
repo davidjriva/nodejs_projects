@@ -12,9 +12,7 @@ const login = async (email, password) => {
     });
 
     if (res.status === 200) {
-      window.setTimeout(() => {
-        location.assign('/');
-      }, 1000);
+      location.assign('/');
     }
   } catch (e) {
     alert(e.response.data.message);
