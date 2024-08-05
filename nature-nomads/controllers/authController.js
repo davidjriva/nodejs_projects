@@ -76,6 +76,8 @@ exports.protect = catchAsync(async (req, res, next) => {
   let token;
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     token = req.headers.authorization.split(' ')[1]; // Extracts JWT from the request (i.e. "<authorization, Bearer example-token-value>")
+  } else if (req.cookies.jwt) {
+    token = req.cookies.jwt; // Extracts JWT from cookies that come with the request
   }
 
   if (!token) {
