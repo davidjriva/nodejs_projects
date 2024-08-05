@@ -59,6 +59,12 @@ app.use(
   })
 );
 
+// ALLOW REQUESTS TO unpkg.com (Leaflet)
+app.use((req, res, next) => {
+  res.setHeader("Content-Security-Policy", "script-src 'self' https://unpkg.com");
+  next();
+})
+
 // ROUTES
 app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);
