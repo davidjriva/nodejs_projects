@@ -12,6 +12,7 @@ const login = async (email, password) => {
     });
 
     if (res.status === 200) {
+      // Return user to home page
       location.assign('/');
     }
   } catch (e) {
