@@ -10,9 +10,14 @@ const login = async (email, password) => {
         password,
       },
     });
-    console.log(res);
+
+    if (res.status === 200) {
+      window.setTimeout(() => {
+        location.assign('/');
+      }, 1000);
+    }
   } catch (e) {
-    console.error(e.response.data);
+    alert(e.response.data.message);
   }
 };
 
