@@ -21,7 +21,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(map);
 
 // ----------------------------------------------
-// Create icon using the image provided by Jonas
+// Create icon using the image provided
 // ----------------------------------------------
 
 var greenIcon = L.icon({
