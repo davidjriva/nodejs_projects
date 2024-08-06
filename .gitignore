@@ -1,2 +1,9 @@
+# Avoid commiting npm package modules
 node_modules
+
+# Avoid committing environment variables
 *.env
+
+# Avoid committing built files and cache
+.parcel-cache
+nature-nomads/public/js/bundled

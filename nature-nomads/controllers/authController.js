@@ -42,6 +42,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     role: req.body.role,
     passwordConfirm: req.body.passwordConfirm,
     passwordChangedAt: req.body.passwordChangedAt,
+    photo: req.body.photo,
   });
 
   createAndSendToken(res, newUser, StatusCodes.CREATED, { newUser });
@@ -76,6 +77,8 @@ exports.protect = catchAsync(async (req, res, next) => {
   let token;
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     token = req.headers.authorization.split(' ')[1]; // Extracts JWT from the request (i.e. "<authorization, Bearer example-token-value>")
+  } else if (req.cookies.jwt) {
+    token = req.cookies.jwt; // Extracts JWT from cookies that come with the request
   }
 
   if (!token) {
@@ -102,6 +105,31 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   // 5. Grant access to protected route
   req.user = user;
+  next();
+});
+
+// Only for rendered pages -- no errors.
+exports.isLoggedIn = catchAsync(async (req, res, next) => {
+  if (req.cookies.jwt) {
+    const decoded = await promisify(jwt.verify)(req.cookies.jwt, process.env.JWT_SECRET);
+
+    // Check if user attempting to access route still exists
+    const user = await User.findById(decoded.id);
+
+    if (!user) {
+      return next();
+    }
+
+    // Check if user changed password after JWT was issued
+    const userChangedPassword = user.changedPasswordAfter(decoded.iat);
+    if (userChangedPassword) {
+      return next();
+    }
+
+    // Based on the above invariants, there's a logged in user
+    res.locals.user = user;
+  }
+
   next();
 });
 

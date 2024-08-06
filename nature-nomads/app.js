@@ -6,6 +6,8 @@ const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
+const cookierParser = require('cookie-parser');
+const cookieParser = require('cookie-parser');
 
 const AppError = require(path.join(__dirname, 'utils', 'appError'));
 const globalErrorHandler = require(path.join(__dirname, 'controllers', 'errorController'));
@@ -45,6 +47,7 @@ app.use('/api', limiter);
 
 // Body parsers - reading data from the body into req.body
 app.use(express.json({ limit: '10kb' })); // Adds the body into the request object as JSON.
+app.use(cookieParser()); // Parses the data from cookies [JWT] --> access via 'req.cookie'
 
 // Data sanitization against NoSQL query injection
 app.use(mongoSanitize());
@@ -59,11 +62,18 @@ app.use(
   })
 );
 
-// ALLOW REQUESTS TO unpkg.com (Leaflet)
+// ALLOW REQUESTS TO unpkg.com and cdnjs.cloudflare.com (Leaflet & Axios)
 app.use((req, res, next) => {
-  res.setHeader("Content-Security-Policy", "script-src 'self' https://unpkg.com/leaflet@1.9.4/dist/leaflet.css https://unpkg.com/leaflet@1.9.4/dist/leaflet.js");
+  res.setHeader(
+    'Content-Security-Policy',
+    "script-src \
+    'self' \
+    https://unpkg.com/leaflet@1.9.4/dist/leaflet.css \
+    https://unpkg.com/leaflet@1.9.4/dist/leaflet.js \
+    https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.3/axios.min.js"
+  );
   next();
-})
+});
 
 // ROUTES
 app.use('/', viewRouter);
