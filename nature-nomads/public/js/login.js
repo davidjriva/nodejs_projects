@@ -32,6 +32,7 @@ export const logout = async () => {
 
     if (res.status === StatusCodes.OK) {
       location.reload(true); // Force a reload from server and NOT browser cache
+      location.assign('/');
     }
   } catch (err) {
     showAlert('error', 'Error logging out! Try again.');

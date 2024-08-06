@@ -76,11 +76,7 @@ exports.login = catchAsync(async (req, res, next) => {
   Logs out a user by overriding their current JWT stored in browser's cookies
 */
 exports.logout = (req, res, next) => {
-  res.cookie('jwt', 'logged-out', {
-    expires: new Date(Date.now() + 1000),
-    httpOnly: true,
-  });
-
+  res.clearCookie('jwt');
   sendResponse(res, StatusCodes.OK);
 };
 
@@ -94,9 +90,7 @@ exports.protect = catchAsync(async (req, res, next) => {
   }
 
   if (!token) {
-    return next(
-      new AppError('No JWT token was sent with the HTTPS request. Please login first to get access to protected routes.', StatusCodes.UNAUTHORIZED)
-    );
+    return res.redirect('/');
   }
 
   // 2. Validate the JWT token [Verification]
@@ -117,33 +111,36 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   // 5. Grant access to protected route
   req.user = user;
+  res.locals.user = user;
   next();
 });
 
 // Only for rendered pages -- no errors.
 exports.isLoggedIn = async (req, res, next) => {
+  if (req.cookies.jwt === null) {
+    return next();
+  }
+
   if (req.cookies.jwt) {
-    try {
-      const decoded = await promisify(jwt.verify)(req.cookies.jwt, process.env.JWT_SECRET);
+    const decoded = await promisify(jwt.verify)(req.cookies.jwt, process.env.JWT_SECRET);
 
-      // Check if user attempting to access route still exists
-      const user = await User.findById(decoded.id);
+    // Check if user attempting to access route still exists
+    const user = await User.findById(decoded.id);
 
-      if (!user) {
-        return next();
-      }
-
-      // Check if user changed password after JWT was issued
-      const userChangedPassword = user.changedPasswordAfter(decoded.iat);
-      if (userChangedPassword) {
-        return next();
-      }
-
-      // Based on the above invariants, there's a logged in user
-      res.locals.user = user;
-    } catch (err) {
-      // Do nothing
+    if (!user) {
+      return next();
     }
+
+    // Check if user changed password after JWT was issued
+    const userChangedPassword = user.changedPasswordAfter(decoded.iat);
+    if (userChangedPassword) {
+      return next();
+    }
+
+    // Based on the above invariants, there's a logged in user
+    res.locals.user = user;
+
+    return next();
   }
 
   next();
