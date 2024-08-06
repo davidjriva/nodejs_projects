@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { login } from './login';
 
 document.querySelector('.form').addEventListener('submit', (e) => {
