@@ -1,13 +1,14 @@
 {
   "name": "naturenomads",
   "version": "1.0.0",
-  "description": "Learning Node.js, Express, & MongoDB",
-  "main": "app.js",
+  "description": "A tour booking website",
+  "source": "public/js/index.js",
+  "main": "public/js/bundle.js",
   "scripts": {
     "start:dev": "nodemon server.js",
     "start:prod": "NODE_ENV=production nodemon server.js",
     "debug": "npx ndb server.js",
-    "watch:js": "parcel watch ./public/js/index.js --dist-dir ./public/js",
+    "watch:js": "parcel watch",
     "build:js": "parcel build ./public/js/index.js --dist-dir ./public/js --no-source-maps"
   },
   "author": "David J. Riva",
