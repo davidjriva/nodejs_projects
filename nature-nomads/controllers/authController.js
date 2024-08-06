@@ -72,6 +72,18 @@ exports.login = catchAsync(async (req, res, next) => {
   createAndSendToken(res, user, StatusCodes.OK, { user });
 });
 
+/*
+  Logs out a user by overriding their current JWT stored in browser's cookies
+*/
+exports.logout = (req, res, next) => {
+  res.cookie('jwt', 'logged-out', {
+    expires: new Date(Date.now() + 1000),
+    httpOnly: true,
+  });
+
+  sendResponse(res, StatusCodes.OK);
+};
+
 exports.protect = catchAsync(async (req, res, next) => {
   // 1. Get token from request and check if it is valid
   let token;
@@ -109,29 +121,33 @@ exports.protect = catchAsync(async (req, res, next) => {
 });
 
 // Only for rendered pages -- no errors.
-exports.isLoggedIn = catchAsync(async (req, res, next) => {
+exports.isLoggedIn = async (req, res, next) => {
   if (req.cookies.jwt) {
-    const decoded = await promisify(jwt.verify)(req.cookies.jwt, process.env.JWT_SECRET);
+    try {
+      const decoded = await promisify(jwt.verify)(req.cookies.jwt, process.env.JWT_SECRET);
 
-    // Check if user attempting to access route still exists
-    const user = await User.findById(decoded.id);
+      // Check if user attempting to access route still exists
+      const user = await User.findById(decoded.id);
 
-    if (!user) {
-      return next();
+      if (!user) {
+        return next();
+      }
+
+      // Check if user changed password after JWT was issued
+      const userChangedPassword = user.changedPasswordAfter(decoded.iat);
+      if (userChangedPassword) {
+        return next();
+      }
+
+      // Based on the above invariants, there's a logged in user
+      res.locals.user = user;
+    } catch (err) {
+      // Do nothing
     }
-
-    // Check if user changed password after JWT was issued
-    const userChangedPassword = user.changedPasswordAfter(decoded.iat);
-    if (userChangedPassword) {
-      return next();
-    }
-
-    // Based on the above invariants, there's a logged in user
-    res.locals.user = user;
   }
 
   next();
-});
+};
 
 exports.restrictTo = (...roles) => {
   return (req, res, next) => {

@@ -3,20 +3,33 @@ const path = require('path');
 
 const AppError = require(path.join(__dirname, '../utils/appError'));
 
-const sendError = (res, err, additionalInfo) => {
-  res.status(err.statusCode).json({
-    status: err.status,
-    message: err.message,
-    ...additionalInfo,
-  });
+const sendError = (res, req, err, additionalInfo) => {
+  if (req.originalUrl.startsWith('/api')) {
+    res.status(err.statusCode).json({
+      status: err.status,
+      message: err.message,
+      ...additionalInfo,
+    });
+  } else {
+    res.status(err.statusCode).render('error', {
+      title: 'Something Went Wrong...',
+      msg: err.message,
+    });
+  }
 };
 
-const sendSimpleError = (res, err) => {
-  console.error('/controllers/errorController.js: ERROR!', err);
-  res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-    status: 'error',
-    message: 'Something went wrong!',
-  });
+const sendSimpleError = (res, req, err) => {
+  if (req.originalUrl.startsWith('/api')) {
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      status: 'error',
+      message: 'Something went wrong!',
+    });
+  } else {
+    res.status(err.statusCode).render('error', {
+      title: 'Something Went Wrong...',
+      msg: 'Please try again later.',
+    });
+  }
 };
 
 const handleCastErrorDB = (err) => {
@@ -51,7 +64,7 @@ module.exports = (err, req, res, next) => {
   err.status = err.status || 'error';
 
   if (process.env.NODE_ENV === 'development') {
-    sendError(res, err, { error: err, stack: err.stack });
+    sendError(res, req, err, { error: err, stack: err.stack });
   } else if (process.env.NODE_ENV === 'production') {
     let error = Object.assign(err);
 
@@ -63,7 +76,7 @@ module.exports = (err, req, res, next) => {
     if (error.name === 'JsonWebTokenError') error = handleJsonWebTokenError();
     if (error.name === 'TokenExpiredError') error = handleTokenExpiredError();
 
-    error.isOperational ? sendError(res, error) : sendSimpleError(res, error);
+    error.isOperational ? sendError(res, req, error) : sendSimpleError(res, req, error);
   }
 
   next();
