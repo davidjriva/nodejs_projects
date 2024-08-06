@@ -9,7 +9,7 @@
     "start:prod": "NODE_ENV=production nodemon server.js",
     "debug": "npx ndb server.js",
     "watch:js": "parcel watch",
-    "build:js": "parcel build ./public/js/index.js --dist-dir ./public/js --no-source-maps"
+    "build:js": "parcel build"
   },
   "author": "David J. Riva",
   "license": "ISC",
