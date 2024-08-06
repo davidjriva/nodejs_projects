@@ -1,2 +1,7 @@
 node_modules
 *.env
+
+# Avoid committing build code
+.parcel-cache
+nature-nomads/public/js/bundle.js
+nature-nomads/public/js/bundle.js.map
