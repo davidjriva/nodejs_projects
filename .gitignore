@@ -1,7 +1,10 @@
+# Avoid commiting npm package modules
 node_modules
+
+# Avoid committing environment variables
 *.env
 
-# Avoid committing build code
+# Avoid committing built files and cache
 .parcel-cache
 nature-nomads/public/js/bundle.js
 nature-nomads/public/js/bundle.js.map
