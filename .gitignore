@@ -6,4 +6,4 @@ node_modules
 
 # Avoid committing built files and cache
 .parcel-cache
-nature-nomads/public/js/bundled
+bundled
