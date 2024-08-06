@@ -6,7 +6,6 @@ const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
-const cookierParser = require('cookie-parser');
 const cookieParser = require('cookie-parser');
 
 const AppError = require(path.join(__dirname, 'utils', 'appError'));
@@ -47,6 +46,7 @@ app.use('/api', limiter);
 
 // Body parsers - reading data from the body into req.body
 app.use(express.json({ limit: '10kb' })); // Adds the body into the request object as JSON.
+app.use(express.urlencoded({ extended: true, limit: '10kb' })); // Allow requests from HTML forms
 app.use(cookieParser()); // Parses the data from cookies [JWT] --> access via 'req.cookie'
 
 // Data sanitization against NoSQL query injection

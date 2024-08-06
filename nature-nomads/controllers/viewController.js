@@ -2,6 +2,7 @@ const { StatusCodes } = require('http-status-codes');
 const path = require('path');
 
 const Tour = require(path.join(__dirname, '../models/tourModel'));
+const User = require(path.join(__dirname, '../models/userModel'));
 const catchAsync = require(path.join(__dirname, '../utils/catchAsync'));
 const AppError = require(path.join(__dirname, '../utils/appError'));
 
@@ -36,3 +37,9 @@ exports.getLoginForm = (req, res) => {
     title: 'Log Into Your Account',
   });
 };
+
+exports.getAccount = catchAsync(async (req, res, next) => {
+  res.status(StatusCodes.OK).render('account', {
+    title: 'Your Account',
+  });
+});
