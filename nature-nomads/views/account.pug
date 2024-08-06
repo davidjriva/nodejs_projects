@@ -8,27 +8,23 @@ block content
             nav.user-view__menu
                 ul.side-nav
                     +navItem('#', 'Settings', 'settings', true)
-                    +navItem('#', 'My bookings', 'briefcase')
-                    +navItem('#', 'My reviews', 'star')
+                    +navItem('#', 'My Bookings', 'briefcase')
+                    +navItem('#', 'My Reviews', 'star')
                     +navItem('#', 'Billing', 'credit-card')
 
                 - if (user.role === 'admin')
                     .admin-nav
                         h5.admin-nav__heading Admin
                         ul.side-nav
-                            +navItem('#', 'Manage tours', 'map')
-                            +navItem('#', 'Manage users', 'users')
-                            +navItem('#', 'Manage reviews', 'star')
-                            +navItem('#', 'Manage bookings', 'briefcase')
+                            +navItem('#', 'Manage Tours', 'map')
+                            +navItem('#', 'Manage Users', 'users')
+                            +navItem('#', 'Manage Reviews', 'star')
+                            +navItem('#', 'Manage Bookings', 'briefcase')
 
             .user-view__content
                 .user-view__form-container
-                    h2.heading-secondary.ma-bt-md Your account settings
+                    h2.heading-secondary.ma-bt-md Your Account Settings
 
-                    //- WITHOUT API
-                    //- form.form.form-user-data(action='/submit-user-data' method='POST')
-
-                    //- WITH API
                     form.form.form-user-data
                         .form__group
                             label.form__label(for='name') Name
