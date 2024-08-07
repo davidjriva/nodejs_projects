@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const path = require('path')
 
 process.on('uncaughtException', (err) => {
   console.error('UNCAUGHT EXCEPTION. Shutting down...');
@@ -16,7 +17,7 @@ process.on('uncaughtException', (err) => {
 
 // Reading in environment variables
 const dotenv = require('dotenv');
-dotenv.config({ path: './config.env' });
+dotenv.config({ path: path.join(__dirname, 'config.env') });
 
 // Connection with MongoDB via Mongoose driver
 const DBConnectionStr = process.env.DATABASE.replace('<PASSWORD>', process.env.DATABASE_PASSWORD);
@@ -44,10 +45,8 @@ const server = app.listen(port, () => {
 });
 
 process.on('unhandledRejection', (err) => {
-  if (process.env.NODE_ENV === 'development') {
-    console.log('UNHANDLED REJECTION. Shutting down...');
-    console.log(err.name, err.message);
-  }
+  console.error('UNHANDLED REJECTION. Shutting down...');
+  console.error(err.name, err.message);
 
   server.close(() => {
     process.exit(1);
