@@ -2,7 +2,7 @@ const { StatusCodes } = require('http-status-codes');
 const path = require('path');
 
 const Tour = require(path.join(__dirname, '../models/tourModel'));
-const User = require(path.join(__dirname, '../models/userModel'));
+const Booking = require(path.join(__dirname, '../models/bookingModel'));
 const catchAsync = require(path.join(__dirname, '../utils/catchAsync'));
 const AppError = require(path.join(__dirname, '../utils/appError'));
 
@@ -41,5 +41,18 @@ exports.getLoginForm = (req, res) => {
 exports.getAccount = catchAsync(async (req, res, next) => {
   res.status(StatusCodes.OK).render('account', {
     title: 'Your Account',
+  });
+});
+
+exports.getMyTours = catchAsync(async (req, res, next) => {
+  const bookings = await Booking.find({ user: req.user.id });
+
+  const tourIds = bookings.map((el) => el.tour);
+
+  const tours = await Tour.find({ _id: { $in: tourIds } });
+
+  res.status(StatusCodes.OK).render('overview', {
+    title: `${req.user.name.split(' ')[0]}'s Booked Tours`,
+    tours,
   });
 });

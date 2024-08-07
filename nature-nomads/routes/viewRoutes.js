@@ -10,6 +10,8 @@ const router = express.Router();
 // Get user information to display on site
 router.get('/me', authController.protect, viewController.getAccount);
 
+router.get('/my-tours', authController.protect, viewController.getMyTours);
+
 // Check if user is logged in via JWT in their cookies
 router.use(authController.isLoggedIn);
 
@@ -18,4 +20,5 @@ router.get('/', bookingController.createBookingCheckout, viewController.getOverv
 router.get('/tour/:slug', viewController.getTour);
 
 router.get('/login', viewController.getLoginForm);
+
 module.exports = router;
