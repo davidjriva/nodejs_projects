@@ -3,6 +3,7 @@ const path = require('path');
 
 const viewController = require(path.join(__dirname, '../controllers/viewController'));
 const authController = require(path.join(__dirname, '../controllers/authController'));
+const bookingController = require(path.join(__dirname, '../controllers/bookingController'));
 
 const router = express.Router();
 
@@ -12,7 +13,7 @@ router.get('/me', authController.protect, viewController.getAccount);
 // Check if user is logged in via JWT in their cookies
 router.use(authController.isLoggedIn);
 
-router.get('/', viewController.getOverview);
+router.get('/', bookingController.createBookingCheckout, viewController.getOverview);
 
 router.get('/tour/:slug', viewController.getTour);
 
