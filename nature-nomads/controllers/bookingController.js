@@ -37,5 +37,5 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
     mode: 'payment',
   });
 
-  sendResponse(res, StatusCodes.OK);
+  sendResponse(res, StatusCodes.OK, session);
 });

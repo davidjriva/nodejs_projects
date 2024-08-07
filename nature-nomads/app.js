@@ -63,14 +63,15 @@ app.use(
   })
 );
 
-// ALLOW REQUESTS TO unpkg.com and cdnjs.cloudflare.com (Leaflet & Axios)
+// ALLOW REQUESTS TO unpkg.com and cdnjs.cloudflare.com (Leaflet & Stripe)
 app.use((req, res, next) => {
   res.setHeader(
     'Content-Security-Policy',
     "script-src \
     'self' \
     https://unpkg.com/leaflet@1.9.4/dist/leaflet.css \
-    https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    https://unpkg.com/leaflet@1.9.4/dist/leaflet.js \
+    https://js.stripe.com/v3/"
   );
   next();
 });
