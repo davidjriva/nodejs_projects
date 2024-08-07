@@ -58,4 +58,8 @@ module.exports = class Email {
   async sendWelcome() {
     await this.send('welcome', 'Welcome to The Nature Nomads Family! 😄 ⛰️🌲🌊');
   }
+
+  async sendPasswordReset() {
+    await this.send('passwordReset', 'Nature Nomads: Your Password Reset Token [valid for 10 minutes]');
+  }
 };
