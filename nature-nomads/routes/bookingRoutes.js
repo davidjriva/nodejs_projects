@@ -17,6 +17,9 @@ router.route('/:id')
     .patch(bookingController.updateBooking)
     .delete(bookingController.deleteBooking);
 
+router.route('/fake-route')
+    .get(bookingController.newAction);
+
 router.route('/')
     .get(bookingController.getAllBookings)
     .post(bookingController.createBookingManually);

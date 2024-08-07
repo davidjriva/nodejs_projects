@@ -61,6 +61,10 @@ exports.getBooking = factory.getOne(Booking);
 
 exports.createBooking = factory.createOne(Booking);
 
+exports.newAction = (req,res,next) => {
+  next()
+}
+
 exports.createBookingManually = factory.createOne(Booking);
 
 exports.updateBooking = factory.updateOne(Booking);
