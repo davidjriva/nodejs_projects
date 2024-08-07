@@ -7,6 +7,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
 const cookieParser = require('cookie-parser');
+const compression = require('compression');
 
 const AppError = require(path.join(__dirname, 'utils/appError'));
 const globalErrorHandler = require(path.join(__dirname, 'controllers/errorController'));
@@ -62,6 +63,9 @@ app.use(
     whitelist: ['duration', 'ratingsQuantity', 'ratingsAverage', 'maxGroupSize', 'difficulty', 'price'], // properties where duplicates are allowed in query string
   })
 );
+
+// Compression - reduces the size of outgoing data
+app.use(compression());
 
 // ALLOW REQUESTS TO unpkg.com and cdnjs.cloudflare.com (Leaflet & Stripe)
 app.use((req, res, next) => {
