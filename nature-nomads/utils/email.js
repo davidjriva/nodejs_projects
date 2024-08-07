@@ -1,27 +1,65 @@
 const nodemailer = require('nodemailer');
+const path = require('path');
+const pug = require('pug');
+const { compile } = require('html-to-text');
 
-const sendEmail = async (options) => {
-  // 1) Create a transporter
-  const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
-    auth: {
-      user: process.env.EMAIL_USERNAME,
-      pass: process.env.EMAIL_PASSWORD,
-    },
-  });
+// HTML-to-Text options
+const options = { wordwrap: 130 };
+const compiledConvert = compile(options);
 
-  // 2) Define the email options
-  const mailOptions = {
-    from: 'David Riva <djr@gmail.com>',
-    to: options.email,
-    subject: options.subject,
-    text: options.message,
-    // html:
-  };
+module.exports = class Email {
+  constructor(user, url) {
+    this.to = user.email;
+    this.firstName = user.name.split(' ')[0];
+    this.url = url;
+    this.from = `David Riva <${process.env.EMAIL_FROM}>`;
+  }
 
-  // 3) Actually send the email
-  await transporter.sendMail(mailOptions);
+  configureAndCreateTransport() {
+    if (process.env.NODE_ENV === 'production') {
+      // TODO: Create a Sendgrid transporter
+      return -1;
+    }
+    return nodemailer.createTransport({
+      host: process.env.EMAIL_HOST,
+      port: process.env.EMAIL_PORT,
+      auth: {
+        user: process.env.EMAIL_USERNAME,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    });
+  }
+
+  async send(template, subject) {
+    // Render HTML based on a Pug template
+    const filename = path.join(__dirname, `../views/emails/${template}.pug`);
+    const html = pug.renderFile(filename, {
+      firstName: this.firstName,
+      url: this.url,
+      subject,
+    });
+
+    // Define email options
+    const mailOptions = {
+      from: this.from,
+      to: this.to,
+      subject,
+      html,
+      text: compiledConvert(html),
+    };
+
+    // Create a transport
+    const transporter = this.configureAndCreateTransport();
+
+    // Send email
+    await transporter.sendMail(mailOptions);
+  }
+
+  async sendWelcome() {
+    await this.send('welcome', 'Welcome to The Nature Nomads Family! 😄 ⛰️🌲🌊');
+  }
+
+  async sendPasswordReset() {
+    await this.send('passwordReset', 'Nature Nomads: Your Password Reset Token [valid for 10 minutes]');
+  }
 };
-
-module.exports = sendEmail;
