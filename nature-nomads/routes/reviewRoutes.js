@@ -1,8 +1,8 @@
 const express = require('express');
 
 const path = require('path');
-const reviewController = require(path.join(__dirname, '..', 'controllers', 'reviewController'));
-const authController = require(path.join(__dirname, '..', 'controllers', 'authController'));
+const reviewController = require(path.join(__dirname, '../controllers/reviewController'));
+const authController = require(path.join(__dirname, '../controllers/authController'));
 
 // mergeParams: gives access to parameters coming from the parent route [route nesting]
 const router = express.Router({ mergeParams: true });
