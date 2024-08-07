@@ -7,6 +7,7 @@ const catchAsync = require(path.join(__dirname, '../utils/catchAsync'));
 const AppError = require(path.join(__dirname, '../utils/appError'));
 const Booking = require(path.join(__dirname, '../models/bookingModel'));
 const Tour = require(path.join(__dirname, '../models/tourModel'));
+const factory = require(path.join(__dirname, '../controllers/handlerFactory'));
 
 exports.getCheckoutSession = catchAsync(async (req, res, next) => {
   // Get the currently booked tour
@@ -52,3 +53,16 @@ exports.createBookingCheckout = catchAsync(async (req, res, next) => {
   res.redirect(req.originalUrl.split('?')[0]);
   next();
 });
+
+// CRUD operations
+exports.getAllBookings = factory.getAll(Booking);
+
+exports.getOneBooking = factory.getOne(Booking);
+
+exports.createBooking = factory.createOne(Booking);
+
+exports.createBookingManually = factory.createOne(Booking);
+
+exports.updateBooking = factory.updateOne(Booking);
+
+exports.deleteBooking = factory.deleteOne(Booking);
