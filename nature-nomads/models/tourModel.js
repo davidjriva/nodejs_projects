@@ -62,6 +62,7 @@ const tourSchema = new mongoose.Schema(
     description: {
       type: String,
       trim: true,
+      required: [true, 'A tour must have a description'],
     },
     imageCover: {
       type: String,
@@ -73,7 +74,10 @@ const tourSchema = new mongoose.Schema(
       default: Date.now(),
       select: false,
     },
-    startDates: [Date],
+    startDates: {
+      type: [Date],
+      required: [true, 'A tour must have start dates'],
+    },
     secretTour: {
       type: Boolean,
       default: false,
@@ -95,6 +99,7 @@ const tourSchema = new mongoose.Schema(
           type: String,
           default: 'Point',
           enum: ['Point'],
+          required: [true, 'A tour must have locations'],
         },
         coordinates: [Number],
         address: String,
