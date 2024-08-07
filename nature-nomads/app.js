@@ -69,8 +69,7 @@ app.use((req, res, next) => {
     "script-src \
     'self' \
     https://unpkg.com/leaflet@1.9.4/dist/leaflet.css \
-    https://unpkg.com/leaflet@1.9.4/dist/leaflet.js \
-    https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.3/axios.min.js"
+    https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
   );
   next();
 });

@@ -19,7 +19,10 @@ const userSchema = new mongoose.Schema({
     trim: true,
     validate: [validator.isEmail, 'Please provide a valid email'],
   },
-  photo: String,
+  photo: {
+    type: String,
+    default: 'default.jpg',
+  },
   role: {
     type: String,
     enum: ['user', 'guide', 'lead-guide', 'admin'],
@@ -39,7 +42,7 @@ const userSchema = new mongoose.Schema({
       },
       message: "The entered passwords don't match",
     },
-    required: [true, 'A user must confirm their password on signup'] // Comment out this line when importing dev-data as the users.json data doesn't conform properly
+    required: [true, 'A user must confirm their password on signup'], // Comment out this line when importing dev-data as the users.json data doesn't conform properly
   },
   passwordChangedAt: Date,
   passwordResetToken: String,
