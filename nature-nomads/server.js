@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const path = require('path')
+const path = require('path');
 
 process.on('uncaughtException', (err) => {
   console.error('UNCAUGHT EXCEPTION. Shutting down...');
@@ -37,7 +37,7 @@ mongoose
 // Express app logic
 const app = require('./app');
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8000;
 const server = app.listen(port, () => {
   if (process.env.NODE_ENV === 'development') {
     console.log(`App running on port ${port}...`);

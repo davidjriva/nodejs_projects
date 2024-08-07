@@ -20,12 +20,18 @@ const bookingRouter = require(path.join(__dirname, 'routes/bookingRoutes'));
 
 const app = express();
 
-// GLOBAL MIDDLEWARES
+// Trust proxies [Heroku]
+app.enable('trust proxy');
 
 // Template Engine Setup (Views):
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
+/*
+  --------------------
+   GLOBAL MIDDLEWARES
+  --------------------
+*/ 
 // Serving static files
 app.use(express.static(path.join(__dirname, 'public')));
 
