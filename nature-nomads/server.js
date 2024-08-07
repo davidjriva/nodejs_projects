@@ -52,3 +52,13 @@ process.on('unhandledRejection', (err) => {
     process.exit(1);
   });
 });
+
+// Handling SIGTERM forced shutdowns from Heroku [deployment]
+// Handles all remaining requests before shutting down
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received. Shutting down gracefully...');
+
+  server.close(() => {
+    console.log('Process terminated');
+  });
+});
