@@ -10,10 +10,10 @@ router.use(authController.protect);
 
 router.get('/checkout-session/:tourId', bookingController.getCheckoutSession);
 
-router.use(authController.restrictTo('admin'));
+router.use(authController.restrictTo('admin', 'lead-guide'));
 
 router.route('/:id')
-    .get(bookingController.getOneBooking)
+    .get(bookingController.getBooking)
     .patch(bookingController.updateBooking)
     .delete(bookingController.deleteBooking);
 

@@ -57,7 +57,7 @@ exports.createBookingCheckout = catchAsync(async (req, res, next) => {
 // CRUD operations
 exports.getAllBookings = factory.getAll(Booking);
 
-exports.getOneBooking = factory.getOne(Booking);
+exports.getBooking = factory.getOne(Booking);
 
 exports.createBooking = factory.createOne(Booking);
 
