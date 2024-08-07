@@ -1,9 +1,9 @@
 const express = require('express');
 const path = require('path');
 
-const tourController = require(path.join(__dirname, '..', 'controllers', 'tourController'));
-const authController = require(path.join(__dirname, '..', 'controllers', 'authController'));
-const reviewRouter = require(path.join(__dirname, '..', 'routes', 'reviewRoutes'));
+const tourController = require(path.join(__dirname, '../controllers/tourController'));
+const authController = require(path.join(__dirname, '../controllers/authController'));
+const reviewRouter = require(path.join(__dirname, '../routes/reviewRoutes'));
 
 const router = express.Router();
 

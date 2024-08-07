@@ -8,13 +8,14 @@ const xss = require('xss-clean');
 const hpp = require('hpp');
 const cookieParser = require('cookie-parser');
 
-const AppError = require(path.join(__dirname, 'utils', 'appError'));
-const globalErrorHandler = require(path.join(__dirname, 'controllers', 'errorController'));
+const AppError = require(path.join(__dirname, 'utils/appError'));
+const globalErrorHandler = require(path.join(__dirname, 'controllers/errorController'));
 
-const tourRouter = require(path.join(__dirname, 'routes', 'tourRoutes'));
-const userRouter = require(path.join(__dirname, 'routes', 'userRoutes'));
-const reviewRouter = require(path.join(__dirname, 'routes', 'reviewRoutes'));
-const viewRouter = require(path.join(__dirname, 'routes', 'viewRoutes'));
+const tourRouter = require(path.join(__dirname, 'routes/tourRoutes'));
+const userRouter = require(path.join(__dirname, 'routes/userRoutes'));
+const reviewRouter = require(path.join(__dirname, 'routes/reviewRoutes'));
+const viewRouter = require(path.join(__dirname, 'routes/viewRoutes'));
+const bookingRouter = require(path.join(__dirname, 'routes/bookingRoutes'));
 
 const app = express();
 
@@ -76,6 +77,7 @@ app.use((req, res, next) => {
 
 // ROUTES
 app.use('/', viewRouter);
+app.use('/api/v1/bookings', bookingRouter);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
