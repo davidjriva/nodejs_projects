@@ -1,7 +1,11 @@
 const nodemailer = require('nodemailer');
 const path = require('path');
 const pug = require('pug');
-const htmlToText = require('html-to-text');
+const { compile } = require('html-to-text');
+
+// HTML-to-Text options
+const options = { wordwrap: 130 };
+const compiledConvert = compile(options);
 
 module.exports = class Email {
   constructor(user, url) {
@@ -41,7 +45,7 @@ module.exports = class Email {
       to: this.to,
       subject,
       html,
-      text: htmlToText.fromString(html),
+      text: compiledConvert(html),
     };
 
     // Create a transport
@@ -52,6 +56,6 @@ module.exports = class Email {
   }
 
   async sendWelcome() {
-    await this.send('welcome', 'Welcome to the Nature Nomads Family 😄 ⛰️🌲🌊');
+    await this.send('welcome', 'Welcome to The Nature Nomads Family! 😄 ⛰️🌲🌊');
   }
 };

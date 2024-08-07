@@ -8,7 +8,7 @@ const catchAsync = require(path.join(__dirname, '../utils/catchAsync'));
 const sendResponse = require(path.join(__dirname, '../utils/sendResponse'));
 const User = require(path.join(__dirname, './../models/userModel'));
 const AppError = require(path.join(__dirname, './../utils/appError'));
-const sendEmail = require(path.join(__dirname, './../utils/email'));
+const Email = require(path.join(__dirname, './../utils/email'));
 
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
@@ -35,15 +35,12 @@ const createAndSendToken = (res, user, statusCode, data) => {
 };
 
 exports.signup = catchAsync(async (req, res, next) => {
-  const newUser = await User.create({
-    name: req.body.name,
-    email: req.body.email,
-    password: req.body.password,
-    role: req.body.role,
-    passwordConfirm: req.body.passwordConfirm,
-    passwordChangedAt: req.body.passwordChangedAt,
-    photo: req.body.photo,
-  });
+  const newUser = await User.create(req.body);
+
+  // Send a welcome email to the new user
+  const url = `${req.protocol}://${req.get('host')}/me`;
+  const welcomeEmail = new Email(newUser, url);
+  await welcomeEmail.sendWelcome();
 
   createAndSendToken(res, newUser, StatusCodes.CREATED, { newUser });
 });
